@@ -1,0 +1,28 @@
+﻿@model XmlFormatter.Models.XmlViewModel
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+
+    <h3>1 - Type or paste your XML code</h3>
+    @Html.TextAreaFor(model => model.Source)
+    
+    <p>
+        <input type="submit" value="2 - Click to format your XML" />
+    </p>
+    
+    <h3>3 - Here your formatted XML</h3>
+    <textarea>@Html.Encode(Model.Formatted)</textarea>
+
+    if (Model.Message != null)
+    {
+        <h3>4 - Oops! Something goes wrong</h3>
+        <textarea>@Model.Message</textarea>
+    }
+}
+
+<p>
+    Why?
+    I needed to compare a <a href="http://en.wikipedia.org/wiki/Web.config">Web.config</a> from my PC with the one on the production server.
+    Even with ignore spaces, the diff wasn't easy to read.
+    I tried <a href="http://www.freeformatter.com/xml-formatter.html">FreeFormatter</a>, but it wasn't enough.
+</p>
