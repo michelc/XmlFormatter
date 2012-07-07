@@ -7,7 +7,12 @@ namespace XmlFormatter.Controllers
     {
         public ActionResult Index()
         {
-            var xml = new XmlViewModel();
+            var xml = (XmlViewModel)TempData["xml"];
+
+            if (xml == null)
+            {
+                xml = new XmlViewModel();
+            }
 
             return View(xml);
         }
@@ -16,7 +21,13 @@ namespace XmlFormatter.Controllers
         [ValidateInput(false)]
         public ActionResult Index(XmlViewModel xml)
         {
-            xml = XmlTools.FormatXml(xml);
+            if (ModelState.IsValid)
+            {
+                xml = XmlTools.FormatXml(xml);
+                TempData["xml"] = xml;
+
+                return RedirectToAction("Index");
+            }
 
             return View(xml);
         }
