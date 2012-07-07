@@ -14,7 +14,7 @@ namespace XmlFormatter.Controllers
                 xml = new XmlViewModel();
             }
 
-            return View(xml);
+            return View("Index", xml);
         }
 
         [HttpPost]
@@ -29,7 +29,7 @@ namespace XmlFormatter.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(xml);
+            return View("Index", xml);
         }
     }
 }
