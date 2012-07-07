@@ -23,10 +23,18 @@ namespace XmlFormatter.Controllers
         {
             if (ModelState.IsValid)
             {
-                xml = XmlTools.FormatXml(xml);
-                TempData["xml"] = xml;
+                xml = XmlTools.LoadXml(xml);
+                if (!string.IsNullOrEmpty(xml.Message))
+                {
+                    ModelState.AddModelError("Source", xml.Message);
+                }
+                else
+                {
+                    xml = XmlTools.FormatXml(xml);
+                    TempData["xml"] = xml;
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
+                }
             }
 
             return View("Index", xml);

@@ -11,28 +11,33 @@ namespace XmlFormatter.Models
     {
         [Required(ErrorMessage="Please, provide some XML code")]
         public string Source { get; set; }
-        public MvcHtmlString Formatted { get; set; }
-        public MvcHtmlString Message { get; set; }
+        public String Formatted { get; set; }
+        public String Message { get; set; }
+        internal XmlDocument Document { get; set; }
     }
 
     public class XmlTools
     {
-        public static XmlViewModel FormatXml(XmlViewModel xml)
+        public static XmlViewModel LoadXml(XmlViewModel xml)
         {
             try
             {
                 // Charge le source XML
-                var document = new XmlDocument();
-                // document.Load(new StringReader(xml.Source));
-                document.LoadXml(xml.Source);
+                xml.Document = new XmlDocument();
+                xml.Document.LoadXml(xml.Source);
+            }
+            catch (Exception ex)
+            {
+                xml.Message = ex.Message;
+            }
 
-                // http://stackoverflow.com/questions/3520230/how-to-check-for-xmldeclaration-in-xmldocument-c-sharp
-                var declaration = document.ChildNodes
-                                .OfType<XmlDeclaration>()
-                                .FirstOrDefault();
+            return xml;
+        }
 
-                // declaration.Encoding
-
+        public static XmlViewModel FormatXml(XmlViewModel xml)
+        {
+            try
+            {
                 // Formatte le document XML
                 var sb = new StringBuilder();
                 var settings = new XmlWriterSettings
@@ -45,26 +50,49 @@ namespace XmlFormatter.Models
                 };
                 using (var writer = XmlWriter.Create(sb, settings))
                 {
-                    document.Save(writer);
+                    xml.Document.Save(writer);
                 }
 
                 // Gère l'indentation des commentaires
-                string firstLine = null;
-                if (document.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    firstLine = xml.Source.Split('\r')[0];
-                }
-                xml.Formatted = new MvcHtmlString(IndentComments(firstLine, sb.ToString()));
+                xml.Formatted = IndentComments(sb.ToString());
+
+                // Vérifie que l'encoding n'a pas changé
+                xml = XmlTools.CheckEncoding(xml);
+
                 xml.Message = null;
             }
             catch (Exception ex)
             {
-                xml.Message = new MvcHtmlString(ex.Message);
+                xml.Message = ex.Message;
             }
             return xml;
         }
 
-        public static string IndentComments(string firstLine, string XmlText)
+        public static XmlViewModel CheckEncoding(XmlViewModel xml)
+        {
+            // Est-ce que le XML formatté contient un encoding UTF-16 ?
+            var firstLine = xml.Formatted.Substring(0, xml.Formatted.IndexOf(Environment.NewLine));
+            if (firstLine.Contains(" encoding=\"utf-16\""))
+            {
+                // Si oui, on recherche l'encoding d'origine
+                // http://stackoverflow.com/questions/3520230/how-to-check-for-xmldeclaration-in-xmldocument-c-sharp
+                var declaration = xml.Document.ChildNodes
+                                    .OfType<XmlDeclaration>()
+                                    .FirstOrDefault();
+
+                var encoding = string.IsNullOrEmpty(declaration.Encoding)
+                                ? ""
+                                : " encoding=\"" + declaration.Encoding + "\"";
+
+                // Et on remplace la déclaration d'encoding UTF-16 par celle d'origine
+                var newFirstLine = firstLine.Replace(" encoding=\"utf-16\"", encoding);
+                xml.Formatted = xml.Formatted.Replace(firstLine, newFirstLine);
+            }
+
+            return xml;
+        }
+
+        public static string IndentComments(string XmlText)
         {
             var sb = new StringBuilder();
             bool inComment = false;
@@ -74,11 +102,6 @@ namespace XmlFormatter.Models
             foreach (var line in lines)
             {
                 var goodLine = line;
-                if (firstLine != null)
-                {
-                    goodLine = firstLine;
-                    firstLine = null;
-                }
                 if (line.Contains("<!--"))
                 {
                     var before = line.Substring(0, line.IndexOf("<!--"));

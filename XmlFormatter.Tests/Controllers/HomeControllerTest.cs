@@ -40,7 +40,10 @@ namespace XmlFormatter.Tests.Controllers
         {
             // Arrange
             var controller = new HomeController();
-            var xml = new XmlViewModel();
+            var xml = new XmlViewModel
+            {
+                Source = "<valid />"
+            };
 
             // Act
             var result = controller.Index(xml) as RedirectToRouteResult;
@@ -54,8 +57,30 @@ namespace XmlFormatter.Tests.Controllers
         {
             // Arrange
             var controller = new HomeController();
-            var xml = new XmlViewModel();
+            var xml = new XmlViewModel
+            {
+                Source = "<valid />"
+            };
             controller.ModelState.AddModelError("Source", "Error message");
+
+            // Act
+            var result = controller.Index(xml) as ViewResult;
+
+            // Assert
+            Assert.IsNotNull(result, "Should have returned a ViewResult");
+            Assert.AreEqual("Index", result.ViewName, "View name should have been 'Index'");
+            Assert.IsTrue(result.ViewData.ModelState.Count > 0, "Should have returned errors");
+        }
+
+        [TestMethod]
+        public void Index_Action_Should_Define_Errors_When_Xml_Is_Invalid()
+        {
+            // Arrange
+            var controller = new HomeController();
+            var xml = new XmlViewModel
+            {
+                Source = "<invalid>"
+            };
 
             // Act
             var result = controller.Index(xml) as ViewResult;
