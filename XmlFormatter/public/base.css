@@ -77,3 +77,14 @@ input[type="submit"] {
 ================================================== */
 	a { color: #333; text-decoration: underline; outline: 0; }
 	a:hover, a:focus { color: #000; }
+
+
+.field-validation-error
+{
+    background-color: red;
+    border: solid red 1px; 
+    color: white;
+    display: block;
+    text-align: center;
+    width: 100%;
+}

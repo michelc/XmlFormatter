@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ namespace XmlFormatter.Models
 {
     public class XmlViewModel
     {
+        [Required(ErrorMessage="Please, provide some XML code")]
         public string Source { get; set; }
         public MvcHtmlString Formatted { get; set; }
         public MvcHtmlString Message { get; set; }

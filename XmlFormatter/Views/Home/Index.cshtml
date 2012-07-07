@@ -4,6 +4,7 @@
     @Html.ValidationSummary(true)
 
     <h3>1 - Type or paste your XML code</h3>
+    @Html.ValidationMessageFor(model => model.Source)
     @Html.TextAreaFor(model => model.Source)
     
     <p>
