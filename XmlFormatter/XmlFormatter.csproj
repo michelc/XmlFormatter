@@ -67,7 +67,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="public\main.css" />
     <Content Include="Global.asax" />
     <Content Include="public\modernizr-2.5.3.js" />
     <Content Include="Web.config" />
