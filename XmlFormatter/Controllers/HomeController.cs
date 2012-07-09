@@ -27,6 +27,7 @@ namespace XmlFormatter.Controllers
                 if (!string.IsNullOrEmpty(xml.Message))
                 {
                     ModelState.AddModelError("Source", xml.Message);
+                    xml.Message = null;
                 }
                 else
                 {
