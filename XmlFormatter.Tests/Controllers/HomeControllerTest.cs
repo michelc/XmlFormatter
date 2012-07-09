@@ -86,8 +86,6 @@ namespace XmlFormatter.Tests.Controllers
             var result = controller.Index(xml) as ViewResult;
 
             // Assert
-            Assert.IsNotNull(result, "Should have returned a ViewResult");
-            Assert.AreEqual("Index", result.ViewName, "View name should have been 'Index'");
             Assert.IsTrue(result.ViewData.ModelState.Count > 0, "Should have returned errors");
         }
     }

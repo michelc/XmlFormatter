@@ -13,7 +13,7 @@ namespace XmlFormatter.Models
         public string Source { get; set; }
         public String Formatted { get; set; }
         public String Message { get; set; }
-        internal XmlDocument Document { get; set; }
+        public XmlDocument Document { get; set; }
     }
 
     public class XmlTools
